@@ -5,6 +5,7 @@ export type Lang = 'ja' | 'en';
 const translations = {
   ja: {
     appTitle: 'File Bridge',
+    appSubtitle: 'iPhoneからWindowsへ、ローカルWi-Fiでかんたん転送',
     serverRunning: 'サーバー起動中',
     serverStopped: 'サーバー停止中',
     port: 'ポート: ',
@@ -18,6 +19,7 @@ const translations = {
   },
   en: {
     appTitle: 'File Bridge',
+    appSubtitle: 'Simple local Wi-Fi transfer from iPhone to Windows',
     serverRunning: 'Server Running',
     serverStopped: 'Server Stopped',
     port: 'Port: ',
