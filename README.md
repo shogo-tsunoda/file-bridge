@@ -1,80 +1,160 @@
+<div align="center">
+
 # File Bridge
 
-iPhoneからWindows PCへ、同一Wi-Fi経由でファイルを転送するデスクトップアプリです。
+**The simple AirDrop alternative for Windows.**
+Transfer files from iPhone to PC over local Wi-Fi — no cloud, no account, no cables.
 
-## 機能
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D6)](https://github.com/shogo-tsunoda/file-bridge/releases)
+[![Release](https://img.shields.io/github/v/release/shogo-tsunoda/file-bridge?label=Download)](https://github.com/shogo-tsunoda/file-bridge/releases/latest)
 
-- Windowsアプリを起動するとローカルHTTPサーバが自動起動
-- 画面にアップロードURLのQRコードを表示
-- iPhoneでQRを読み取り → Safariでアップロード画面を開く
-- 複数ファイルを選択して送信 → Windows上の指定フォルダに保存
-- 画像・動画・PDF・任意のファイルに対応（最大2GB）
-- ファイル名衝突時は自動リネーム（例: `name (1).ext`）
-- 受信履歴の表示（直近10件）
+[**Download**](https://github.com/shogo-tsunoda/file-bridge/releases/latest) | [How it works](#how-it-works) | [FAQ](#faq)
 
-## 技術スタック
+</div>
 
-- **Backend**: Go + Wails v2
-- **Frontend**: React + TypeScript + Vite
-- **QRコード**: qrcode.react
+---
 
-## セットアップ
+## What is File Bridge?
 
-### 前提条件
+File Bridge is a free, open-source Windows desktop app that lets you **transfer files from your iPhone to your Windows PC** using only your local Wi-Fi network.
 
-- [Go](https://go.dev/dl/) 1.22以上
-- [Node.js](https://nodejs.org/) 18以上
-- [Wails CLI](https://wails.io/docs/gettingstarted/installation)
+Just open the app, scan a QR code with your iPhone, and send files instantly. No cloud service, no sign-up, no iTunes, no USB cable. Your files stay on your local network and are never uploaded to any external server.
 
-```bash
-go install github.com/wailsapp/wails/v2/cmd/wails@latest
+It works as a **local network file transfer** tool — a lightweight, privacy-first alternative to AirDrop for Windows users.
+
+---
+
+## file-bridge とは？
+
+iPhone から Windows PC にファイルを転送するための無料デスクトップアプリです。
+
+- アプリを起動して QR コードを読み取るだけ
+- 同じ Wi-Fi につながっていれば OK
+- クラウドなし、アカウント登録なし、ケーブル不要
+- データは外部サーバーに一切送信されません
+
+---
+
+## Why File Bridge?
+
+- **No cloud** — Files transfer directly over your local network
+- **No account** — No sign-up, no login, no email required
+- **No cables** — Wireless transfer over Wi-Fi
+- **Private** — Your data never leaves your network
+- **Simple** — Scan a QR code and you're connected
+- **Free & open source** — MIT licensed, no ads, no tracking
+
+---
+
+## How it works
+
+```mermaid
+graph LR
+    A["iPhone (Safari)"] -- "Wi-Fi (LAN)" --> B["File Bridge (Windows)"]
+    B --> C["Save Folder"]
 ```
 
-### 開発
+1. **Launch** File Bridge on your Windows PC
+2. **Scan** the QR code shown on screen with your iPhone
+3. **Select** files on your iPhone and tap Upload
+4. **Done** — files are saved to your chosen folder
 
-```bash
-# 開発モードで起動（ホットリロード対応）
-wails dev
+> Both devices must be connected to the same Wi-Fi network. No internet connection is required.
 
-# プロダクションビルド
-wails build
-```
+---
 
-ビルド成果物は `build/bin/file-bridge.exe` に生成されます。
+## Screenshots
 
-## 使い方
+<!-- Replace with actual screenshots -->
 
-1. `file-bridge.exe` を起動する
-2. 画面にQRコードとURLが表示される
-3. iPhoneで QRコードを読み取る（またはURLをSafariで開く）
-4. 「Select Files」をタップしてファイルを選択
-5. 「Upload」をタップして送信
-6. Windows側の指定フォルダにファイルが保存される
+| Windows App | iPhone Upload |
+|:-----------:|:------------:|
+| ![Windows App](docs/screenshots/app.png) | ![iPhone Upload](docs/screenshots/mobile.png) |
 
-## 保存先の変更
+---
 
-アプリ画面の「Change」ボタンからフォルダを選択できます。
-設定は `%APPDATA%\FileBridge\config.json` に保存されます。
+## Quick Start
 
-デフォルトの保存先: `%USERPROFILE%\Downloads\FileBridge`
+### 1. Download
 
-## トラブルシューティング
+Go to the [Releases page](https://github.com/shogo-tsunoda/file-bridge/releases/latest) and download:
 
-### iPhoneから接続できない
+- **`FileBridge-vX.X.X-windows-amd64.zip`** — Portable version (just unzip and run)
+- **`file-bridge-amd64-installer.exe`** — Installer version
 
-1. **同一Wi-Fiか確認**: PCとiPhoneが同じWi-Fiネットワークに接続されていること
-2. **Windowsファイアウォール**: アプリがファイアウォールでブロックされている場合があります
-   - Windows設定 → プライバシーとセキュリティ → Windowsセキュリティ → ファイアウォールとネットワーク保護
-   - 「ファイアウォールによるアプリケーションの許可」から `file-bridge.exe` を許可
-3. **ポートの確認**: アプリ画面に表示されているポート番号が正しいか確認
-4. **VPN**: VPNが有効な場合、ローカル通信がブロックされることがあります。一時的にOFFにしてください
+### 2. Run
 
-### QRコードが表示されない
+Launch `file-bridge.exe`. A QR code and URL will appear.
 
-- Wi-Fiに接続されていない場合、LAN IPが取得できずQRが表示されません
-- PCがイーサネットのみの場合でもIPが取得できれば動作します
+> On first launch, Windows Firewall may ask to allow the app. Click **Allow** so your iPhone can connect.
 
-### ファイルが大きすぎる
+### 3. Scan
 
-- 最大2GBまで対応しています
-- ネットワーク速度によっては時間がかかる場合があります
+Open your iPhone camera and scan the QR code. Safari will open the upload page.
+
+### 4. Upload
+
+Tap **Select Files**, choose your photos/videos/documents, then tap **Upload**.
+
+### 5. Done
+
+Files are saved to the folder shown in the app. You can change the save location anytime.
+
+---
+
+## FAQ
+
+### Can I transfer files from iPhone to Windows without iTunes?
+
+Yes. File Bridge transfers files directly over your local Wi-Fi. No iTunes, no iCloud, no USB cable needed.
+
+### Does this use the internet?
+
+No. File Bridge works entirely on your local network. No data is sent to the internet.
+
+### Is my data uploaded to any server?
+
+No. Files are sent directly from your iPhone to your PC. There is no external server involved.
+
+### Does it work without Wi-Fi?
+
+Both your iPhone and PC need to be on the same Wi-Fi network. File Bridge does not use Bluetooth or mobile data.
+
+### Is it safe?
+
+File Bridge runs a local HTTP server only accessible within your Wi-Fi network. No data leaves your local network. The source code is fully open and auditable.
+
+### What file types are supported?
+
+All file types — photos, videos, PDFs, documents, and any other files. Maximum file size is 2 GB.
+
+### Does it support multiple languages?
+
+Yes. File Bridge supports English and Japanese. You can switch languages in the app.
+
+---
+
+## Security & Privacy
+
+File Bridge is designed with privacy in mind:
+
+- **Local only** — All transfers happen over your local Wi-Fi network
+- **No external connections** — The app never contacts any remote server
+- **No telemetry** — No usage data, analytics, or tracking of any kind
+- **No account** — No personal information is collected
+- **Open source** — The complete source code is available for review
+
+---
+
+## Contributing
+
+Contributions are welcome! See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for build instructions.
+
+Bug reports: [GitHub Issues](https://github.com/shogo-tsunoda/file-bridge/issues)
+
+---
+
+## License
+
+[MIT License](LICENSE) — free for personal and commercial use.
