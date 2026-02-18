@@ -1,0 +1,238 @@
+#app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+/* Language Switcher */
+.lang-switcher {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+}
+
+.lang-btn {
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  --wails-draggable: no-drag;
+}
+
+.lang-btn:hover {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.lang-btn.active {
+  background: #38bdf8;
+  border-color: #38bdf8;
+  color: #0f172a;
+}
+
+.header h1 {
+  font-size: 1.4rem;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.header p {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Server Status */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+}
+
+.status-badge.running {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.status-badge.stopped {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-badge.running .status-dot {
+  background: #4ade80;
+}
+
+.status-badge.stopped .status-dot {
+  background: #f87171;
+}
+
+/* QR Section */
+.qr-section {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.qr-wrapper {
+  background: white;
+  display: inline-block;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.url-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  word-break: break-all;
+  margin-bottom: 4px;
+}
+
+.port-text {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Save Dir Section */
+.save-section {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.save-section .label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.save-section .dir-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-section .dir-path {
+  flex: 1;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.save-section .change-btn {
+  padding: 6px 14px;
+  background: #334155;
+  color: #e2e8f0;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  --wails-draggable: no-drag;
+}
+
+.save-section .change-btn:hover {
+  background: #475569;
+}
+
+/* History Section */
+.history-section {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.history-section .label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #334155;
+  font-size: 0.8rem;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item .file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-item .file-name {
+  color: #e2e8f0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item .file-meta {
+  color: #64748b;
+  font-size: 0.7rem;
+  margin-top: 2px;
+}
+
+.history-item .file-size {
+  color: #94a3b8;
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+.empty-history {
+  color: #475569;
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 16px 0;
+}
+
+/* Warning */
+.warning-box {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.75rem;
+  color: #fbbf24;
+  line-height: 1.5;
+}

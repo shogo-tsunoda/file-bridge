@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go version:*)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)",
+      "Bash(wails version:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"/c/Program Files/Go/bin:$HOME/go/bin:$PATH\")",
+      "Bash(cmd.exe //c \"where go\")",
+      "Bash(powershell.exe -Command \"Get-Command go -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command \"[System.Environment]::GetEnvironmentVariable\\(''Path'', ''Machine''\\)\")",
+      "Bash(tr:*)",
+      "Bash(powershell.exe -Command \"Get-ChildItem ''C:\\\\Program Files\\\\Go'' -ErrorAction SilentlyContinue\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path ''C:\\\\'' -Filter ''go.exe'' -Recurse -ErrorAction SilentlyContinue -Depth 3 | Select-Object -ExpandProperty FullName\")",
+      "Bash(winget list:*)",
+      "Bash(curl:*)",
+      "Bash(powershell.exe -Command \"Start-Process msiexec.exe -ArgumentList ''/i'',''C:\\\\Users\\\\developer\\\\AppData\\\\Local\\\\Temp\\\\go_installer.msi'',''/quiet'',''/norestart'' -Wait -Verb RunAs\")",
+      "Bash(go install:*)",
+      "Bash(wails init:*)",
+      "Bash(npm install:*)",
+      "Bash(go mod tidy:*)",
+      "Bash(wails generate:*)",
+      "Bash(npm run build:*)",
+      "Bash(wails build:*)",
+      "Bash(powershell.exe -Command \"\\(Get-Item ''C:\\\\Users\\\\developer\\\\project\\\\file-bridge\\\\build\\\\bin\\\\file-bridge.exe''\\).VersionInfo | Format-List\")"
+    ]
+  }
+}
