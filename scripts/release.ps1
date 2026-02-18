@@ -8,10 +8,14 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $binDir = Join-Path $root 'build/bin'
 $releaseDir = Join-Path $root 'build/release'
-$exe = Join-Path $binDir 'file-bridge.exe'
+$exeCandidates = @(
+  (Join-Path $binDir 'FileBridge.exe'),
+  (Join-Path $binDir 'file-bridge.exe')
+)
+$exe = $exeCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 
-if (-not (Test-Path $exe)) {
-  throw "Not found: $exe. Run 'wails build' first."
+if (-not $exe) {
+  throw "Not found: FileBridge.exe (or file-bridge.exe). Run 'wails build' first."
 }
 
 if ($Version -notmatch '^\d+\.\d+\.\d+$') {
@@ -30,8 +34,12 @@ $checksums = @()
 $zipHash = (Get-FileHash -Path $zipPath -Algorithm SHA256).Hash.ToLower()
 $checksums += "$zipHash  $zipName"
 
-$installer = Join-Path $binDir 'file-bridge-amd64-installer.exe'
-if (Test-Path $installer) {
+$installerCandidates = @(
+  (Join-Path $binDir 'FileBridge-amd64-installer.exe'),
+  (Join-Path $binDir 'file-bridge-amd64-installer.exe')
+)
+$installer = $installerCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+if ($installer) {
   $installerName = Split-Path $installer -Leaf
   $installerHash = (Get-FileHash -Path $installer -Algorithm SHA256).Hash.ToLower()
   $checksums += "$installerHash  $installerName"
@@ -41,7 +49,7 @@ $sumFile = Join-Path $releaseDir 'SHA256SUMS.txt'
 $checksums | Set-Content -Path $sumFile -Encoding utf8
 
 Write-Host "Created: $zipPath"
-if (Test-Path $installer) {
+if ($installer) {
   Write-Host "Found installer: $installer"
 }
 Write-Host "Created: $sumFile"

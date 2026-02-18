@@ -81,11 +81,11 @@ graph LR
 Go to the [Releases page](https://github.com/shogo-tsunoda/file-bridge/releases/latest) and download:
 
 - **`FileBridge-vX.X.X-windows-amd64.zip`** — Portable version (just unzip and run)
-- **`file-bridge-amd64-installer.exe`** — Installer version
+- **`FileBridge-amd64-installer.exe`** — Installer version
 
 ### 2. Run
 
-Launch `file-bridge.exe`. A QR code and URL will appear.
+Launch `FileBridge.exe`. A QR code and URL will appear.
 
 > On first launch, Windows Firewall may ask to allow the app. Click **Allow** so your iPhone can connect.
 
