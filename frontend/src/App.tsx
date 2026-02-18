@@ -117,7 +117,6 @@ function App() {
             </button>
           </div>
           <h1>{t('appTitle')}</h1>
-          <p>{t('appSubtitle')}</p>
         </div>
 
         <div style={{ textAlign: 'center' }}>
@@ -132,8 +131,6 @@ function App() {
             <div className="qr-wrapper">
               <QRCodeSVG value={url} size={180} level="M" />
             </div>
-            <div className="url-text">{url}</div>
-            <div className="port-text">{t('port')}{serverInfo?.port}</div>
           </div>
         )}
 

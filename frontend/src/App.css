@@ -49,10 +49,6 @@
   margin-bottom: 4px;
 }
 
-.header p {
-  font-size: 0.8rem;
-  color: #64748b;
-}
 
 /* Server Status */
 .status-badge {
@@ -107,17 +103,6 @@
   margin-bottom: 12px;
 }
 
-.url-text {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  word-break: break-all;
-  margin-bottom: 4px;
-}
-
-.port-text {
-  font-size: 0.75rem;
-  color: #64748b;
-}
 
 /* Save Dir Section */
 .save-section {
