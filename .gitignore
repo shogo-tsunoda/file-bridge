@@ -1,6 +1,8 @@
 build/bin
 build/release
 build/windows/installer/tmp
+build/windows/msix
 node_modules
 frontend/dist
 file-bridge.exe
+.claude/
