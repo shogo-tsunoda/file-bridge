@@ -102,6 +102,29 @@ func (a *App) SelectSaveDir() (string, error) {
 	return dir, nil
 }
 
+// GetCompressSettings returns the current compression settings
+func (a *App) GetCompressSettings() map[string]interface{} {
+	return map[string]interface{}{
+		"compressImages": a.config.CompressImages,
+		"imageQuality":   a.config.ImageQuality,
+		"keepOriginal":   a.config.KeepOriginal,
+	}
+}
+
+// SetCompressSettings updates the compression settings and saves config
+func (a *App) SetCompressSettings(compressImages bool, imageQuality int, keepOriginal bool) error {
+	if imageQuality < 30 {
+		imageQuality = 30
+	}
+	if imageQuality > 95 {
+		imageQuality = 95
+	}
+	a.config.CompressImages = compressImages
+	a.config.ImageQuality = imageQuality
+	a.config.KeepOriginal = keepOriginal
+	return SaveConfig(a.config)
+}
+
 // GetUploadHistory returns the recent upload history
 func (a *App) GetUploadHistory() []UploadRecord {
 	a.historyMu.Lock()

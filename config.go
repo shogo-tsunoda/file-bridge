@@ -9,8 +9,11 @@ import (
 
 // Config represents the application configuration
 type Config struct {
-	SaveDir string `json:"saveDir"`
-	Lang    string `json:"lang"`
+	SaveDir        string `json:"saveDir"`
+	Lang           string `json:"lang"`
+	CompressImages bool   `json:"compressImages"`
+	ImageQuality   int    `json:"imageQuality"`
+	KeepOriginal   bool   `json:"keepOriginal"`
 }
 
 // configFileName is the config file name
@@ -53,6 +56,11 @@ func LoadConfig() *Config {
 
 	if cfg.Lang == "" {
 		cfg.Lang = "ja"
+	}
+
+	// Default image quality
+	if cfg.ImageQuality == 0 {
+		cfg.ImageQuality = 80
 	}
 
 	return cfg

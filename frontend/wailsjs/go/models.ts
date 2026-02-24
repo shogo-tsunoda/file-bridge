@@ -5,6 +5,8 @@ export namespace main {
 	    size: number;
 	    timestamp: string;
 	    savePath: string;
+	    compressed?: boolean;
+	    originalSize?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new UploadRecord(source);
@@ -16,6 +18,8 @@ export namespace main {
 	        this.size = source["size"];
 	        this.timestamp = source["timestamp"];
 	        this.savePath = source["savePath"];
+	        this.compressed = source["compressed"];
+	        this.originalSize = source["originalSize"];
 	    }
 	}
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import './App.css';
-import { GetServerInfo, SelectSaveDir, GetUploadHistory, SetLang } from '../wailsjs/go/main/App';
+import { GetServerInfo, SelectSaveDir, GetUploadHistory, SetLang, GetCompressSettings, SetCompressSettings } from '../wailsjs/go/main/App';
 import { EventsOn } from '../wailsjs/runtime/runtime';
 import { LanguageContext, getTranslation, type Lang, type TranslationKey } from './i18n';
 
@@ -19,6 +19,14 @@ interface UploadRecord {
   size: number;
   timestamp: string;
   savePath: string;
+  compressed?: boolean;
+  originalSize?: number;
+}
+
+interface CompressSettings {
+  compressImages: boolean;
+  imageQuality: number;
+  keepOriginal: boolean;
 }
 
 function formatSize(bytes: number): string {
@@ -32,6 +40,11 @@ function App() {
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null);
   const [history, setHistory] = useState<UploadRecord[]>([]);
   const [lang, setLangState] = useState<Lang>('ja');
+  const [compress, setCompress] = useState<CompressSettings>({
+    compressImages: false,
+    imageQuality: 80,
+    keepOriginal: false,
+  });
 
   const t = useCallback((key: TranslationKey) => getTranslation(lang, key), [lang]);
 
@@ -57,9 +70,30 @@ function App() {
     }
   }, []);
 
+  const refreshCompress = useCallback(async () => {
+    try {
+      const s = await GetCompressSettings();
+      const cs = s as unknown as CompressSettings;
+      setCompress(cs);
+    } catch (e) {
+      console.error('Failed to get compress settings:', e);
+    }
+  }, []);
+
+  const handleCompressChange = async (updates: Partial<CompressSettings>) => {
+    const next = { ...compress, ...updates };
+    setCompress(next);
+    try {
+      await SetCompressSettings(next.compressImages, next.imageQuality, next.keepOriginal);
+    } catch (e) {
+      console.error('Failed to save compress settings:', e);
+    }
+  };
+
   useEffect(() => {
     refreshInfo();
     refreshHistory();
+    refreshCompress();
 
     const cancel = EventsOn('upload:completed', () => {
       refreshHistory();
@@ -146,6 +180,45 @@ function App() {
           </div>
         </div>
 
+        <details className="compress-section">
+          <summary className="compress-summary">{t('imageCompression')}</summary>
+          <div className="compress-body">
+            <label className="compress-toggle">
+              <input
+                type="checkbox"
+                checked={compress.compressImages}
+                onChange={(e) => handleCompressChange({ compressImages: e.target.checked })}
+              />
+              <span>{t('compressImages')}</span>
+            </label>
+            {compress.compressImages && (
+              <>
+                <div className="quality-row">
+                  <span className="quality-label">{t('imageQuality')}</span>
+                  <input
+                    type="range"
+                    min={30}
+                    max={95}
+                    step={5}
+                    value={compress.imageQuality}
+                    onChange={(e) => handleCompressChange({ imageQuality: Number(e.target.value) })}
+                    className="quality-slider"
+                  />
+                  <span className="quality-value">{compress.imageQuality}%</span>
+                </div>
+                <label className="compress-toggle">
+                  <input
+                    type="checkbox"
+                    checked={compress.keepOriginal}
+                    onChange={(e) => handleCompressChange({ keepOriginal: e.target.checked })}
+                  />
+                  <span>{t('keepOriginal')}</span>
+                </label>
+              </>
+            )}
+          </div>
+        </details>
+
         <div className="history-section">
           <div className="label">{t('recentUploads')}</div>
           {history.length === 0 ? (
@@ -157,7 +230,14 @@ function App() {
                   <div className="file-name" title={record.fileName}>
                     {record.fileName}
                   </div>
-                  <div className="file-meta">{record.timestamp}</div>
+                  <div className="file-meta">
+                    {record.timestamp}
+                    {record.compressed && record.originalSize ? (
+                      <span className="compress-badge">
+                        {' '}({formatSize(record.originalSize)} → {formatSize(record.size)})
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
                 <div className="file-size">{formatSize(record.size)}</div>
               </div>

@@ -18,10 +18,12 @@ import (
 
 // UploadRecord represents a single file upload record
 type UploadRecord struct {
-	FileName  string `json:"fileName"`
-	Size      int64  `json:"size"`
-	Timestamp string `json:"timestamp"`
-	SavePath  string `json:"savePath"`
+	FileName     string `json:"fileName"`
+	Size         int64  `json:"size"`
+	Timestamp    string `json:"timestamp"`
+	SavePath     string `json:"savePath"`
+	Compressed   bool   `json:"compressed,omitempty"`
+	OriginalSize int64  `json:"originalSize,omitempty"`
 }
 
 // maxUploadSize is the max upload size (2GB)
@@ -140,14 +142,16 @@ func (fs *FileServer) handleFileUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get compression settings
+	compressEnabled := fs.app.config.CompressImages
+	imageQuality := fs.app.config.ImageQuality
+	keepOriginal := fs.app.config.KeepOriginal
+
 	var results []UploadRecord
 
 	for _, fh := range files {
 		// Sanitize filename
 		safeName := sanitizeFilename(fh.Filename)
-
-		// Resolve unique path (handle collisions)
-		destPath := resolveUniquePath(saveDir, safeName)
 
 		// Open uploaded file
 		src, err := fh.Open()
@@ -156,37 +160,112 @@ func (fs *FileServer) handleFileUpload(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		// Create destination file
-		dst, err := os.Create(destPath)
-		if err != nil {
+		// Check if we should compress this file
+		shouldCompress := compressEnabled && IsCompressibleImage(safeName)
+
+		if shouldCompress {
+			// Read file into memory for compression
+			originalData, compResult, compErr := CompressImageFromReader(src, safeName, imageQuality)
 			src.Close()
-			log.Printf("Failed to create file %s: %v", destPath, err)
-			continue
+
+			if compErr != nil {
+				log.Printf("Compression failed for %s: %v, saving original", safeName, compErr)
+				// Fallback: save original
+				destPath := resolveUniquePath(saveDir, safeName)
+				if writeErr := os.WriteFile(destPath, originalData, 0644); writeErr != nil {
+					log.Printf("Failed to write fallback file %s: %v", destPath, writeErr)
+					continue
+				}
+				record := UploadRecord{
+					FileName:  filepath.Base(destPath),
+					Size:      int64(len(originalData)),
+					Timestamp: time.Now().Format("2006-01-02 15:04:05"),
+					SavePath:  destPath,
+				}
+				results = append(results, record)
+				fs.app.addUploadRecord(record)
+				log.Printf("File saved (compression failed, original): %s (%d bytes)", destPath, len(originalData))
+				continue
+			}
+
+			// Save original copy if requested
+			if keepOriginal {
+				origExt := filepath.Ext(safeName)
+				origBase := strings.TrimSuffix(safeName, origExt)
+				origName := origBase + "_original" + origExt
+				origPath := resolveUniquePath(saveDir, origName)
+				if writeErr := os.WriteFile(origPath, originalData, 0644); writeErr != nil {
+					log.Printf("Failed to save original copy %s: %v", origPath, writeErr)
+				} else {
+					log.Printf("Original copy saved: %s (%d bytes)", origPath, len(originalData))
+				}
+			}
+
+			// Determine output filename (extension may change for webp->jpg)
+			outName := safeName
+			if compResult.DidCompress {
+				origExt := filepath.Ext(safeName)
+				if strings.ToLower(origExt) != compResult.Extension {
+					outName = strings.TrimSuffix(safeName, origExt) + compResult.Extension
+				}
+			}
+
+			destPath := resolveUniquePath(saveDir, outName)
+			dataToWrite := compResult.Data
+
+			if writeErr := os.WriteFile(destPath, dataToWrite, 0644); writeErr != nil {
+				log.Printf("Failed to write compressed file %s: %v", destPath, writeErr)
+				continue
+			}
+
+			record := UploadRecord{
+				FileName:     filepath.Base(destPath),
+				Size:         int64(len(dataToWrite)),
+				Timestamp:    time.Now().Format("2006-01-02 15:04:05"),
+				SavePath:     destPath,
+				Compressed:   compResult.DidCompress,
+				OriginalSize: compResult.OriginalSize,
+			}
+			results = append(results, record)
+			fs.app.addUploadRecord(record)
+
+			if compResult.DidCompress {
+				log.Printf("File saved (compressed): %s (%d bytes → %d bytes)", destPath, compResult.OriginalSize, compResult.NewSize)
+			} else {
+				log.Printf("File saved (no size reduction): %s (%d bytes)", destPath, len(dataToWrite))
+			}
+		} else {
+			// No compression: stream copy as before
+			destPath := resolveUniquePath(saveDir, safeName)
+
+			dst, err := os.Create(destPath)
+			if err != nil {
+				src.Close()
+				log.Printf("Failed to create file %s: %v", destPath, err)
+				continue
+			}
+
+			written, err := io.Copy(dst, src)
+			src.Close()
+			dst.Close()
+
+			if err != nil {
+				log.Printf("Failed to write file %s: %v", destPath, err)
+				os.Remove(destPath)
+				continue
+			}
+
+			record := UploadRecord{
+				FileName:  filepath.Base(destPath),
+				Size:      written,
+				Timestamp: time.Now().Format("2006-01-02 15:04:05"),
+				SavePath:  destPath,
+			}
+			results = append(results, record)
+			fs.app.addUploadRecord(record)
+
+			log.Printf("File saved: %s (%d bytes)", destPath, written)
 		}
-
-		// Stream copy
-		written, err := io.Copy(dst, src)
-		src.Close()
-		dst.Close()
-
-		if err != nil {
-			log.Printf("Failed to write file %s: %v", destPath, err)
-			os.Remove(destPath)
-			continue
-		}
-
-		record := UploadRecord{
-			FileName:  filepath.Base(destPath),
-			Size:      written,
-			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
-			SavePath:  destPath,
-		}
-		results = append(results, record)
-
-		// Add to history
-		fs.app.addUploadRecord(record)
-
-		log.Printf("File saved: %s (%d bytes)", destPath, written)
 	}
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{

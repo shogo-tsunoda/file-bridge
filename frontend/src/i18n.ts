@@ -14,6 +14,12 @@ const translations = {
     noFiles: 'まだファイルを受信していません',
     firewallWarning:
       'iPhoneから接続できない場合は、Windowsファイアウォールの設定を確認してください。このアプリの通信を許可するか、一時的にファイアウォールを無効にしてください。両方のデバイスが同じWi-Fiに接続されている必要があります。',
+    imageCompression: '画像圧縮',
+    compressImages: '保存前に画像を圧縮',
+    imageQuality: '画質',
+    keepOriginal: '元画像も保存',
+    compressed: '圧縮済み',
+    compressionFailed: '圧縮失敗（元ファイルを保存）',
   },
   en: {
     appTitle: 'File Bridge',
@@ -26,6 +32,12 @@ const translations = {
     noFiles: 'No files received yet',
     firewallWarning:
       'If your iPhone cannot connect, check Windows Firewall settings. Allow this app through the firewall or temporarily disable it. Both devices must be on the same Wi-Fi network.',
+    imageCompression: 'Image Compression',
+    compressImages: 'Compress images before saving',
+    imageQuality: 'Quality',
+    keepOriginal: 'Keep original copy',
+    compressed: 'Compressed',
+    compressionFailed: 'Compression failed (original saved)',
   },
 } as const;
 
