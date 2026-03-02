@@ -417,7 +417,18 @@ input[type="file"] { display: none; }
   white-space: nowrap;
   margin-right: 8px;
 }
-.file-item .size { color: #94a3b8; white-space: nowrap; }
+.file-item .size { color: #94a3b8; white-space: nowrap; margin-right: 8px; }
+.file-item .remove-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.file-item .remove-btn:active { color: #f87171; }
 .send-btn {
   display: block;
   width: 100%;
@@ -496,7 +507,15 @@ var progressFill = document.getElementById('progressFill');
 var selectedFiles = [];
 
 fileInput.addEventListener('change', function() {
-  selectedFiles = Array.from(this.files);
+  var newFiles = Array.from(this.files);
+  var existingNames = {};
+  selectedFiles.forEach(function(f) { existingNames[f.name + '_' + f.size] = true; });
+  newFiles.forEach(function(f) {
+    if (!existingNames[f.name + '_' + f.size]) {
+      selectedFiles.push(f);
+    }
+  });
+  this.value = '';
   renderFileList();
   sendBtn.disabled = selectedFiles.length === 0;
   statusEl.textContent = '';
@@ -505,10 +524,27 @@ fileInput.addEventListener('change', function() {
 
 function renderFileList() {
   fileList.innerHTML = '';
-  selectedFiles.forEach(function(f) {
+  selectedFiles.forEach(function(f, i) {
     var div = document.createElement('div');
     div.className = 'file-item';
-    div.innerHTML = '<span class="name">' + escapeHtml(f.name) + '</span><span class="size">' + formatSize(f.size) + '</span>';
+    var nameSpan = document.createElement('span');
+    nameSpan.className = 'name';
+    nameSpan.textContent = f.name;
+    var sizeSpan = document.createElement('span');
+    sizeSpan.className = 'size';
+    sizeSpan.textContent = formatSize(f.size);
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = '\u00d7';
+    removeBtn.setAttribute('data-index', i);
+    removeBtn.addEventListener('click', function() {
+      selectedFiles.splice(parseInt(this.getAttribute('data-index')), 1);
+      renderFileList();
+      sendBtn.disabled = selectedFiles.length === 0;
+    });
+    div.appendChild(nameSpan);
+    div.appendChild(sizeSpan);
+    div.appendChild(removeBtn);
     fileList.appendChild(div);
   });
 }
