@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  AppxManifest.xml for File Bridge MSIX packaging.
+  Identity values are from Microsoft Partner Center (App identity page).
+
+  For local testing with self-signed certificates, change Publisher to:
+    Publisher="CN=shogo-tsunoda"
+  and rebuild with: .\build-msix.ps1 -Version X.Y.Z -Sign
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity
+    Name="ShogoTsunoda.FileBridge"
+    Version="{{VERSION}}"
+    Publisher="CN=EB801A8D-2401-45BC-9A63-9D1DDEBC6283"
+    ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>FileBridge</DisplayName>
+    <PublisherDisplayName>Shogo Tsunoda</PublisherDisplayName>
+    <Description>iPhone to Windows file transfer over Wi-Fi</Description>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="ja-jp" />
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application
+      Id="FileBridge"
+      Executable="FileBridge.exe"
+      EntryPoint="Windows.FullTrustApplication">
+
+      <uap:VisualElements
+        DisplayName="FileBridge"
+        Description="iPhone to Windows file transfer over Wi-Fi"
+        BackgroundColor="#0F172A"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile
+          Wide310x150Logo="Assets\Wide310x150Logo.png"
+          Square310x310Logo="Assets\Square310x310Logo.png"
+          Square71x71Logo="Assets\SmallTile.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0F172A" />
+      </uap:VisualElements>
+
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClientServer" />
+    <Capability Name="privateNetworkClientServer" />
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+
+</Package>

@@ -1,7 +1,9 @@
 build/bin
 build/release
 build/windows/installer/tmp
-build/windows/msix
+build/windows/msix/staging/
+build/windows/msix/*.pfx
+build/windows/msix/*.cer
 node_modules
 frontend/dist
 file-bridge.exe
